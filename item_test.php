@@ -2,25 +2,6 @@
 /*
 TO DO
 1. Duplicate checking
-2. Move add manufacturer/type to add item dialog box.
-    - Ajax-ify the add (DONE) & edit (check checkbox functions) dialogs
-	
-	if(data.i_partnumber == "unk") {
-		$("#partnumbercbx").attr('checked','checked');
-		$("#partnumber").val("");
-		$("#partnumber").attr("disabled", true);
-	} else {
-		$("#partnumber").val(data.i_partnumber);
-		$("#partnumber").attr("disabled", false);
-	}
-	if(data.i_roadnumber == "n/a") {
-		$("#roadnumbercbx").attr('checked','checked');
-		$("#roadnumber").val("");
-		$("#roadnumber").attr("disabled", true);
-	} else {
-		$("#roadnumber").val(data.i_roadnumber);
-	}
-	
 */
 	require_once('auth.php');
 	
@@ -82,7 +63,7 @@ TO DO
 	var oTable, oSettings;
 	
 	$(function(){
-		var clickedRowId, oldRow, edit_errors, nTr;
+		var clickedRowId, oldRow, edit_errors, nTr, addMRVar;
 		var anOpen = [];
 		var sImageUrl = "css/images/";
 		var sSource = "edit.php";
@@ -267,16 +248,8 @@ TO DO
 									value = data.i_value;
 									type = data.i_type;
 									id = data.i_index;
-									if(data.i_partnumber == "unk") {
-										partnumber = '0';
-									} else {
-										partnumber = data.i_partnumber;
-									}
-									if(data.i_roadnumber == "n/a") {
-										roadnumber = '0';
-									} else {
-										roadnumber = data.i_roadnumber;
-									}	
+									partnumber = data.i_partnumber;
+									roadnumber = data.i_roadnumber;
 								}
 							});
 							$("#edit_form").load('form.php', function() {
@@ -292,8 +265,21 @@ TO DO
 										$("#type").val(type);
 										$("#item_id").val(id);
 										$("#roadname").val(roadname);
-										$("#partnumber").val(roadnumber);
-										$("#roadnumber").val(partnumber);
+										if(partnumber == 'unk') {
+											$("#partnumbercbx").attr('checked','checked');
+											$("#partnumber").val("");
+											$("#partnumber").attr("disabled", true);
+										} else {
+											$("#partnumber").val(partnumber);
+											$("#partnumber").attr("disabled", false);
+										}
+										if(roadnumber == 'n/a') {
+											$("#roadnumbercbx").attr('checked','checked');
+											$("#roadnumber").val("");
+											$("#roadnumber").attr("disabled", true);
+										} else {
+											$("#roadnumber").val(roadnumber);
+										}										
 									},
 									buttons: {
 										"Edit Item": function() {
@@ -358,8 +344,7 @@ TO DO
 											});							
 						}
 		});	
-					
-
+				
 		$("#formAddNewRow").validate({
 				rules: {
 					scale: "required",
@@ -425,7 +410,7 @@ TO DO
 							searchData.push({"name":"sSearch","value":sSrch});
 							searchData.push({"name":"iDisplayStart","value":0});
 							searchData.push({"name":"member_id","value":<?= $_SESSION['SESS_MEMBER_ID'] ?>});
-
+							
 							$.ajax({
 							  url: "item_print.php",
 							  type: "POST", 		  
@@ -440,8 +425,44 @@ TO DO
 							  }
 							});						
 		});	
-
-
+		
+		$('#addMRForm').validate({
+			rules: { newentry: 'required' },
+			onkeyup: false,
+			onclick: false,
+			messages: {},
+			invalidHandler: function(e, validator) {
+				var errors = validator.numberOfInvalids();
+				if (errors) {
+					var message = 'You must enter a value';
+					$("div.addMRerror span").html(message);
+					$("div.addMRerror").show();
+				} else {
+					$("div.addMRerror").hide();
+				}
+			},
+			submitHandler: function(form) {
+				if(addMRVar == "manufacturer") {
+					var addMRData = {ref:"manufacturer", manufacturer:$("#newentry").val()};
+				} else {
+					var addMRData = {ref:"roadname", roadname:$("#newentry").val()};
+				}
+				$.ajax({
+					type: "POST",
+					url: "add.php",
+					data: (addMRData),
+					success: function(data) {
+						if(addMRVar == "manufacturer") {
+							$("#manufacturer").append('<option selected="selected" value='+data+'>'+$("#newentry").val()+'</option>');
+							$("#manufacturer").val(data);
+						} else {
+							$("#roadname").append('<option selected="selected" value='+data+'>'+$("#newentry").val()+'</option>');
+							$("#roadname").val(data);
+						}
+					}
+				});
+			}
+		});
 		
 		$('#dialog-add-MR').dialog({
 			autoOpen: false,
@@ -465,8 +486,10 @@ TO DO
 		
 		$("input@[name='selector']").change(function(){
 			if ($("input[@name='selector']:checked").val() == 'manufacturer') {
+				addMRVar = "manufacturer";
 				$("#togglediv").html("New Manufacturer: ");
 			} else if ($("input[@name='selector']:checked").val() == 'roadname') {
+				addMRVar = "roadname";
 				$("#togglediv").html("New Roadname: ");
 			}
 		});
@@ -533,10 +556,14 @@ include('menu.php');
 		<form id="edit_form" action="#">
 		</form>		
 		<div id="dialog-add-MR">
+			<div class="addMRerror" style="display:none;">
+			  <img src="css/images/important.gif" alt="Warning!" width="24" height="24" style="float:left; margin: -5px 10px 0px 0px; " />
+			  <span></span>.<br clear="all" />
+			</div>			
 			<form id="addMRForm" action="#">
 				Are you adding a 
 				<input type="radio" name="selector" id="selector" value="manufacturer" />Manufacturer or <input type="radio" name="selector" id="selector" value="roadname" />Roadname? <br /><br />
-				<div id="togglediv" style="display:inline;"></div> <input class="required" type="text" name="newentry" id="newentry" value="" size="30" maxlength="50" />
+				<div id="togglediv" style="display:inline;"></div> <input type="text" name="newentry" id="newentry" value="" size="30" maxlength="50" />
 			</form>
 		</div>		
 		
