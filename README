@@ -1,0 +1,12 @@
+This GIT repo is simply a place for me to maintain the source code I use to drive http://www.modeltraintracker.com .   The site will be open soon as a subscription service (US$5/month) for model railroad enthusiasts to maintain a detailed inventory of their collection.
+
+The site is powered by:
+PHP - http://www.php.net/
+MySQL - http://www.mysql.com/
+JQuery - http://www.jquery.com/ 
+JQueryUI - http://www.jqueryui.com/
+JQuery Validation - http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+DataTables - http://www.datatables.net/
+DataTables Editable - http://code.google.com/p/jquery-datatables-editable/
+
+Special thanks to all the developers for their excellent software and solutions.  
