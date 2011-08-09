@@ -1,5 +1,5 @@
 <?php
-
+// MTT VERSION 1.0
 session_start();
 
 //Check whether the session variable SESS_MEMBER_ID is present or not
