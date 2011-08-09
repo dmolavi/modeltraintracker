@@ -13,12 +13,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Model Train Inventory</title>
-<link type="text/css" href="css/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+<link type="text/css" href="css/prr/jquery-ui-1.8.14.custom.css" rel="stylesheet" />	
 <link type="text/css" href="css/layout.css" rel="stylesheet" />
 <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
-<script type="text/javascript">
-
+<script type="text/javascript"> 
+	$(function(){
+		$('a').button().width(110);
+	});
 </script>
 <style type="text/css">
 </style>

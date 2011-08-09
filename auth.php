@@ -13,4 +13,28 @@ if (eregi("auth.php",$_SERVER['SCRIPT_NAME'])) {
 		header("location: login.php");
 		exit();
 	}
+
+	require_once('config.php');
+	//Connect to mysql server
+	$link = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
+	if(!$link) {
+		die('Failed to connect to server: ' . mysql_error());
+	}
+	
+	//Select database
+	$db = mysql_select_db(DB_DATABASE);
+	if(!$db) {
+		die("Unable to select database");
+	}
+	
+	function is_admin() {
+		$admin_query = "SELECT admin FROM members WHERE member_id = ".$_SESSION['SESS_MEMBER_ID'];
+		$admin_result = mysql_query($admin_query) or die(mysql_error());
+		$admin_row = mysql_fetch_row($admin_result);
+		if($admin_row[0] > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 ?>
